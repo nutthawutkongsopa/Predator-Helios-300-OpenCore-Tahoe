@@ -1554,7 +1554,7 @@
 				<key>Comment</key>
 				<string></string>
 				<key>Enabled</key>
-				<true/>
+				<false/>
 				<key>HideVerbose</key>
 				<false/>
 				<key>LoadEarly</key>
