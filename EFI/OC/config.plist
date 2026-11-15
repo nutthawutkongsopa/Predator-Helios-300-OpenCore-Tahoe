@@ -886,7 +886,7 @@
 			<key>PickerAudioAssist</key>
 			<false/>
 			<key>PickerMode</key>
-			<string>External</string>
+			<string>Builtin</string>
 			<key>PickerVariant</key>
 			<string>Blackosx\BsxDark1</string>
 			<key>PollAppleHotKeys</key>
@@ -907,7 +907,7 @@
 			<key>DisableWatchDog</key>
 			<true/>
 			<key>DisplayDelay</key>
-			<integer>0</integer>
+			<integer>5000</integer>
 			<key>DisplayLevel</key>
 			<integer>2151678018</integer>
 			<key>LogModules</key>
@@ -1290,7 +1290,7 @@
 				<key>SystemAudioVolume</key>
 				<data>Rg==</data>
 				<key>boot-args</key>
-				<string>-wegnoegpu keepsyms=1 debug=0x100 alcid=31  -igfxblr -v</string>
+				<string>-wegnoegpu keepsyms=1 debug=0x100 alcid=31  -igfxblr -v msgbuf=1048576</string>
 				<key>csr-active-config</key>
 				<data>/w8AAA==</data>
 				<key>prev-lang:kbd</key>
