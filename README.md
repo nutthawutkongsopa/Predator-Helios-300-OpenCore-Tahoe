@@ -36,4 +36,5 @@
 - `HfsPlus.efi` comes from [OcBinaryData](https://github.com/acidanthera/OcBinaryData).
 - **USB installer (Linux):** `./scripts/make-usb-installer.sh download` fetches the latest macOS recovery + HeliPort v1.5.0 (`.dmg` copied to `HeliPort/` on the USB); `sudo ./scripts/make-usb-installer.sh /dev/sdX` erases that USB and writes this EFI + recovery. Boot it, pick *macOS Base System*, erase the target in Disk Utility, then Reinstall macOS (needs Ethernet / USB tethering — HeliPort cannot run in recovery).
 - **Replace OpenCore on this machine (Linux):** `sudo ./scripts/install-efi.sh [--dry-run]` backs up existing `EFI/OC*` to `~/efi-backup/`, installs `EFI/OC` to the ESP, and swaps the UEFI boot entries (other OSes untouched).
+- `HideAuxiliary` is off so the recovery entry ("macOS Base System") shows in the picker. `OC/Resources` comes from [OcBinaryData](https://github.com/acidanthera/OcBinaryData) (not part of the OpenCorePkg zip).
 - Not boot-tested on hardware — keep a working Sonoma EFI on a USB stick as a fallback.
