@@ -38,4 +38,5 @@
 - **Replace OpenCore on this machine (Linux):** `sudo ./scripts/install-efi.sh [--dry-run]` backs up existing `EFI/OC*` to `~/efi-backup/`, installs `EFI/OC` to the ESP, and swaps the UEFI boot entries (other OSes untouched).
 - `HideAuxiliary` is off so the recovery entry ("macOS Base System") shows in the picker. `OC/Resources` comes from [OcBinaryData](https://github.com/acidanthera/OcBinaryData) (not part of the OpenCorePkg zip).
 - **SMBIOS is MacBookPro16,1**: macOS Tahoe does not support MacBookPro15,x (the old model shows the 🚫 prohibitory sign). Generate your own serial/MLB/UUID with `macserial -m MacBookPro16,1` if you reuse this EFI.
+- **USBMap** is in the macOS 26 format (`AppleUSBHostMergeProperties` + `usb-port-number`/`usb-port-type`, model MacBookPro16,1). Re-map with [USBMap](https://github.com/corpnewt/USBMap) if you reuse this EFI on other hardware.
 - Not boot-tested on hardware — keep a working Sonoma EFI on a USB stick as a fallback.
