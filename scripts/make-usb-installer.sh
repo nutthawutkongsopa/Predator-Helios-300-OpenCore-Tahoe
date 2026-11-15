@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build a bootable macOS Tahoe recovery USB with this EFI (Linux).
-#   ./scripts/make-usb-installer.sh download            # fetch macOS recovery only (no USB touched)
+#   ./scripts/make-usb-installer.sh download            # fetch macOS recovery + HeliPort only (no USB touched)
 #   sudo ./scripts/make-usb-installer.sh /dev/sdX       # ERASE /dev/sdX, then write EFI + recovery
 # Needs: python3, parted, mkfs.vfat (dosfstools), rsync, curl access to Apple's CDN.
 set -euo pipefail
@@ -11,6 +11,7 @@ OC_VER="1.0.8"
 OC_URL="https://github.com/acidanthera/OpenCorePkg/releases/download/$OC_VER/OpenCore-$OC_VER-RELEASE.zip"
 # Board id for the latest macOS recovery (OpenCore macrecovery README, "Latest version")
 BOARD_ID="Mac-CFF7D910A743CAAF"
+HELIPORT_VER="v1.5.0"   # latest stable; needed to join Wi-Fi with itlwm
 
 download_recovery() {
   [ -s "$CACHE/com.apple.recovery.boot/BaseSystem.dmg" ] && { echo "Recovery already cached in $CACHE"; return; }
@@ -24,8 +25,15 @@ download_recovery() {
   ls -lh com.apple.recovery.boot
 }
 
+download_heliport() {
+  [ -s "$CACHE/HeliPort.dmg" ] && return
+  mkdir -p "$CACHE"
+  curl -fsSL -o "$CACHE/HeliPort.dmg" "https://github.com/OpenIntelWireless/HeliPort/releases/download/$HELIPORT_VER/HeliPort.dmg"
+  ls -lh "$CACHE/HeliPort.dmg"
+}
+
 [ $# -eq 1 ] || { sed -n '2,6p' "$0"; exit 1; }
-if [ "$1" = download ]; then download_recovery; exit 0; fi
+if [ "$1" = download ]; then download_recovery; download_heliport; exit 0; fi
 
 DEV="$1"
 [ "$(id -u)" -eq 0 ] || { echo "Run with sudo."; exit 1; }
@@ -34,7 +42,7 @@ DEV="$1"
 [ "$(lsblk -dno RM "$DEV")" = 1 ] || [ "$(lsblk -dno TRAN "$DEV")" = usb ] || { echo "$DEV is not removable/USB. Refusing."; exit 1; }
 if lsblk -no MOUNTPOINTS "$DEV" | grep -qE '^(/|/boot|/boot/efi|/home)$'; then echo "$DEV holds a system mount. Refusing."; exit 1; fi
 
-download_recovery
+download_recovery; download_heliport
 echo; lsblk -o NAME,SIZE,MODEL,TRAN,MOUNTPOINTS "$DEV"
 read -r -p "ALL DATA on $DEV will be ERASED. Type the device path to confirm: " ans
 [ "$ans" = "$DEV" ] || { echo "Aborted."; exit 1; }
@@ -48,5 +56,6 @@ MNT="$(mktemp -d)"; trap 'umount "$MNT" 2>/dev/null || true; rmdir "$MNT"' EXIT
 mount "$PART" "$MNT"
 rsync -rt --no-perms --no-owner --no-group "$ROOT/EFI" "$MNT/"
 rsync -rt --no-perms --no-owner --no-group "$CACHE/com.apple.recovery.boot" "$MNT/"
+mkdir -p "$MNT/HeliPort"; cp "$CACHE/HeliPort.dmg" "$MNT/HeliPort/"
 sync
-echo "Done. Boot the laptop from this USB -> OpenCore -> 'macOS Base System (External)' -> Disk Utility (erase target as APFS/GUID) -> Reinstall macOS (needs internet; Wi-Fi via itlwm needs HeliPort, so use Ethernet or USB tethering)."
+echo "Done. HeliPort.dmg is on the USB (HeliPort/) - install it in macOS after the first boot. Boot the laptop from this USB -> OpenCore -> 'macOS Base System (External)' -> Disk Utility (erase target as APFS/GUID) -> Reinstall macOS (needs internet; Wi-Fi via itlwm needs HeliPort, so use Ethernet or USB tethering)."

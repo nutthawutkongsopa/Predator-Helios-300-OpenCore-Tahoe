@@ -34,5 +34,5 @@
 - **Wi-Fi:** `AirportItlwm` has no build newer than Sonoma 14.4, so this EFI uses the generic `itlwm.kext`. Install the [HeliPort](https://github.com/OpenIntelWireless/HeliPort) app to connect to Wi-Fi.
 - Upgraded from the Sonoma EFI; `config.plist` was updated for OpenCore 1.0.8 (`ClearTaskSwitchBit`, per-driver `HideVerbose`) and validated with `ocvalidate`.
 - `HfsPlus.efi` comes from [OcBinaryData](https://github.com/acidanthera/OcBinaryData).
-- **USB installer (Linux):** `./scripts/make-usb-installer.sh download` fetches the latest macOS recovery; `sudo ./scripts/make-usb-installer.sh /dev/sdX` erases that USB and writes this EFI + recovery. Boot it, pick *macOS Base System*, erase the target in Disk Utility, then Reinstall macOS (needs Ethernet / USB tethering — HeliPort cannot run in recovery).
+- **USB installer (Linux):** `./scripts/make-usb-installer.sh download` fetches the latest macOS recovery + HeliPort v1.5.0 (`.dmg` copied to `HeliPort/` on the USB); `sudo ./scripts/make-usb-installer.sh /dev/sdX` erases that USB and writes this EFI + recovery. Boot it, pick *macOS Base System*, erase the target in Disk Utility, then Reinstall macOS (needs Ethernet / USB tethering — HeliPort cannot run in recovery).
 - Not boot-tested on hardware — keep a working Sonoma EFI on a USB stick as a fallback.
