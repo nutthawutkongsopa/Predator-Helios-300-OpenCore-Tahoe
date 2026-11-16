@@ -12,6 +12,7 @@ OC_URL="https://github.com/acidanthera/OpenCorePkg/releases/download/$OC_VER/Ope
 # Board id for the latest macOS recovery (OpenCore macrecovery README, "Latest version")
 BOARD_ID="Mac-CFF7D910A743CAAF"
 HELIPORT_VER="v1.5.0"   # latest stable; needed to join Wi-Fi with itlwm
+HELIPORT_ALPHA="v2.0.0-alpha"   # fallback build (new UI, testing only)
 
 download_recovery() {
   [ -s "$CACHE/com.apple.recovery.boot/BaseSystem.dmg" ] && { echo "Recovery already cached in $CACHE"; return; }
@@ -26,10 +27,10 @@ download_recovery() {
 }
 
 download_heliport() {
-  [ -s "$CACHE/HeliPort.dmg" ] && return
   mkdir -p "$CACHE"
-  curl -fsSL -o "$CACHE/HeliPort.dmg" "https://github.com/OpenIntelWireless/HeliPort/releases/download/$HELIPORT_VER/HeliPort.dmg"
-  ls -lh "$CACHE/HeliPort.dmg"
+  [ -s "$CACHE/HeliPort.dmg" ] || curl -fsSL -o "$CACHE/HeliPort.dmg" "https://github.com/OpenIntelWireless/HeliPort/releases/download/$HELIPORT_VER/HeliPort.dmg"
+  [ -s "$CACHE/HeliPort-$HELIPORT_ALPHA.dmg" ] || curl -fsSL -o "$CACHE/HeliPort-$HELIPORT_ALPHA.dmg" "https://github.com/OpenIntelWireless/HeliPort/releases/download/$HELIPORT_ALPHA/HeliPort.dmg"
+  ls -lh "$CACHE"/HeliPort*.dmg
 }
 
 [ $# -eq 1 ] || { sed -n '2,6p' "$0"; exit 1; }
@@ -56,6 +57,6 @@ MNT="$(mktemp -d)"; trap 'umount "$MNT" 2>/dev/null || true; rmdir "$MNT"' EXIT
 mount "$PART" "$MNT"
 rsync -rt --no-perms --no-owner --no-group "$ROOT/EFI" "$MNT/"
 rsync -rt --no-perms --no-owner --no-group "$CACHE/com.apple.recovery.boot" "$MNT/"
-mkdir -p "$MNT/HeliPort"; cp "$CACHE/HeliPort.dmg" "$MNT/HeliPort/"
+mkdir -p "$MNT/HeliPort"; cp "$CACHE"/HeliPort*.dmg "$MNT/HeliPort/"
 sync
 echo "Done. HeliPort.dmg is on the USB (HeliPort/) - install it in macOS after the first boot. Boot the laptop from this USB -> OpenCore -> 'macOS Base System (External)' -> Disk Utility (erase target as APFS/GUID) -> Reinstall macOS (needs internet; Wi-Fi via itlwm needs HeliPort, so use Ethernet or USB tethering)."
