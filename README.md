@@ -23,7 +23,7 @@
 | VoodooPS2Controller | 2.3.7 |
 | VoodooInput | 1.1.6 |
 | VoodooI2C / VoodooI2CHID | 2.9.1 |
-| IntelBluetoothFirmware | 2.4.0 |
+| IntelBluetoothFirmware + IntelBTPatcher | 2.4.0 |
 | BlueToolFixup (BrcmPatchRAM) | 2.7.2 |
 | RealtekRTL8111 | 3.0.0 |
 | USBInjectAll | 0.8.1 |
@@ -36,7 +36,8 @@
 - `HfsPlus.efi` comes from [OcBinaryData](https://github.com/acidanthera/OcBinaryData).
 - **USB installer (Linux):** `./scripts/make-usb-installer.sh download` fetches the latest macOS recovery + HeliPort v1.5.0 + the v2.0.0-alpha fallback (`.dmg`s copied to `HeliPort/` on the USB); `sudo ./scripts/make-usb-installer.sh /dev/sdX` erases that USB and writes this EFI + recovery. Boot it, pick *macOS Base System*, erase the target in Disk Utility, then Reinstall macOS (needs Ethernet / USB tethering — HeliPort cannot run in recovery).
 - **Replace OpenCore on this machine (Linux):** `sudo ./scripts/install-efi.sh [--dry-run]` backs up existing `EFI/OC*` to `~/efi-backup/`, installs `EFI/OC` to the ESP, and swaps the UEFI boot entries (other OSes untouched).
-- `HideAuxiliary` is off so the recovery entry ("macOS Base System") shows in the picker. `OC/Resources` comes from [OcBinaryData](https://github.com/acidanthera/OcBinaryData) (not part of the OpenCorePkg zip).
 - **SMBIOS is MacBookPro16,1**: macOS Tahoe does not support MacBookPro15,x (the old model shows the 🚫 prohibitory sign). Generate your own serial/MLB/UUID with `macserial -m MacBookPro16,1` if you reuse this EFI.
 - **USBMap** is in the macOS 26 format (`AppleUSBHostMergeProperties` + `usb-port-number`/`usb-port-type`, model MacBookPro16,1). Re-map with [USBMap](https://github.com/corpnewt/USBMap) if you reuse this EFI on other hardware.
+- **Bluetooth:** needs `IntelBluetoothFirmware` + `IntelBTPatcher` + `BlueToolFixup`, and the `-ibtcompatbeta` boot-arg (IntelBTPatcher 2.4.0 officially stops at Sequoia).
+- **Boot picker:** no verbose; `HideAuxiliary` is on and all OpenCore tools are disabled, so only macOS (and Windows) show. Press **Space** in the picker to reveal hidden entries (recovery, other disks). To re-enable tools set `Misc > Tools > Enabled` in `config.plist`; for verbose boot add `-v` to `boot-args`.
 - Not boot-tested on hardware — keep a working Sonoma EFI on a USB stick as a fallback.
